@@ -12,19 +12,30 @@ public class Store {
         productList.add(product);
     }
 
-    public void buyItem(ShoppingCart cart) {
+    public void buyItems(ShoppingCart cart) {
         Map<String, Integer> itemList = cart.getItems();
         for (Entry<String, Integer> item : itemList.entrySet()) {
-            findProduct(item);
+            List<Product> product = findProduct(item.getKey());
+
+            purchaseItem(product, item.getValue());
         }
     }
 
-    public void findProduct(Entry<String, Integer> purchaseItem) {
+    public void purchaseItem(List<Product> product, int itemQuantity) {
+        int quantity = product.getFirst().buy(itemQuantity);
+        if (quantity > 0) {
+            product.get(1).buy(quantity);
+        }
+    }
+
+    public List<Product> findProduct(String itemName) {
+        List<Product> products = new ArrayList<>();
         for (Product product : productList) {
             String productName = product.getName();
-            if (productName.equals(purchaseItem.getKey())) {
-                product.buy(purchaseItem.getValue());
+            if (productName.equals(itemName)) {
+                products.add(product);
             }
         }
+        return products;
     }
 }

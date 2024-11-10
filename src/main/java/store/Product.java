@@ -33,8 +33,14 @@ public class Product {
         return promotion;
     }
 
-    public void buy(int quantity) {
+    public int buy(int quantity) {
+        if (quantity <= this.quantity) {
+            int remainingQuantity = quantity - this.quantity;
+            this.quantity = 0;
+            return remainingQuantity;
+        }
         this.quantity -= quantity;
+        return 0;
     }
 
     public String printPrice() {
