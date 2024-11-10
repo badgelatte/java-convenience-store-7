@@ -34,7 +34,7 @@ public class Product {
     }
 
     public int buy(int quantity) {
-        if (quantity <= this.quantity) {
+        if (quantity > this.quantity) {
             int remainingQuantity = quantity - this.quantity;
             this.quantity = 0;
             return remainingQuantity;
