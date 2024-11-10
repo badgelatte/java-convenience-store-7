@@ -17,7 +17,7 @@ public class Store {
         promotionList.add(promotion);
     }
 
-    public void buyItems(ShoppingCart cart) {
+    public void buyAllItemsInCart(ShoppingCart cart) {
         Map<String, Integer> itemList = cart.getItems();
         for (Entry<String, Integer> item : itemList.entrySet()) {
             List<Product> product = findProduct(item.getKey());
@@ -44,5 +44,15 @@ public class Store {
             }
         }
         return products;
+    }
+
+    public Promotion findPromotion(String productName) {
+        for (Promotion promotion : promotionList) {
+            String productPromotionName = promotion.getName();
+            if (productName.equals(productPromotionName)) {
+                return promotion;
+            }
+        }
+        return null;
     }
 }
