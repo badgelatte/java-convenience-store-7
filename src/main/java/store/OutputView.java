@@ -3,6 +3,7 @@ package store;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,6 +16,7 @@ public class OutputView {
         List<String> productInfos = fileRead(PRODUCTS_FILE_PATH);
         inputProductToStore(productInfos, store);
         List<String> promotionInfos = fileRead(PROMOTIONS_FILE_PATH);
+        inputPromotion(promotionInfos, store);
     }
 
     public void printWelcomeMsg() {
@@ -39,6 +41,14 @@ public class OutputView {
         }
     }
 
+    public void inputPromotion(List<String> promotionList, Store store) {
+        for (String promotionInfo : promotionList) {
+            Promotion promotion = makePromotion(promotionInfo);
+
+            store.addPromotion(promotion);
+        }
+    }
+
     public Product makeProduct(String input) {
         String[] inputs = input.split(",");
 
@@ -48,9 +58,20 @@ public class OutputView {
         return new Product(inputs[0], price, quantity, inputs[3]);
     }
 
+    public Promotion makePromotion(String input) {
+        String[] inputs = input.split(",");
+        int buy = validatePrice(inputs[1]);
+        int get = validatePrice(inputs[2]);
+
+        LocalDate startDate = LocalDate.parse(inputs[3]);
+        LocalDate endDate = LocalDate.parse(inputs[4]);
+
+        return new Promotion(inputs[0], buy, get, startDate, endDate);
+    }
+
     public int validatePrice(String input) {
         int price = 0;
-        if(!Objects.equals(input, "재고 없음")) {
+        if (!Objects.equals(input, "재고 없음")) {
             price = Integer.parseInt(input);
         }
         return price;

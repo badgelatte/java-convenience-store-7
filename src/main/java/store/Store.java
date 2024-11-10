@@ -7,9 +7,14 @@ import java.util.Map.Entry;
 
 public class Store {
     List<Product> productList = new ArrayList<>();
+    List<Promotion> promotionList = new ArrayList<>();
 
     public void addProduct(Product product) {
         productList.add(product);
+    }
+
+    public void addPromotion(Promotion promotion) {
+        promotionList.add(promotion);
     }
 
     public void buyItems(ShoppingCart cart) {
