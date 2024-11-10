@@ -7,7 +7,6 @@ import java.util.Objects;
 
 public class OutputView {
     private static final String PRODUCTS_FILE_PATH = "src/main/resources/products.md";
-
     public void start(Store store) {
         printWelcomeMsg();
         fileRead(store);
@@ -29,19 +28,24 @@ public class OutputView {
         }
     }
 
-    public void inputProduct(String line, Store store) {
-        String[] lines = line.split(",");
-        if (Objects.equals(lines[1], "price")) {
+    public void inputProduct(String input, Store store) {
+        if (input.contains("name")) {
             return;
         }
-        int price = Integer.parseInt(lines[1]);
-        int quantity = Integer.parseInt(lines[2]);
+        Product product = makeProduct(input);
 
-        Product product = new Product(lines[0], price, quantity, lines[3]);
         printProuct(product);
         store.addProduct(product);
     }
 
+    public Product makeProduct(String input) {
+        String[] inputs = input.split(",");
+
+        int price = Integer.parseInt(inputs[1]);
+        int quantity = Integer.parseInt(inputs[2]);
+
+        return new Product(inputs[0], price, quantity, inputs[3]);
+    }
 
     public void printProuct(Product product) {
         System.out.println(product.toString());
