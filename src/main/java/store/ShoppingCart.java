@@ -9,9 +9,16 @@ public class ShoppingCart {
     public void addItems(String input) {
         String[] itemList = input.split(",");
         for (String item : itemList) {
+            check(item);
             String itemName = outputItemName(item);
             int quantity = outputItemQuantity(item);
             items.put(itemName, quantity);
+        }
+    }
+
+    private void check(String input) {
+        if (!input.matches("\\[[가-힣a-zA-Z]+-+[0-9]+]")) {
+            throw new IllegalArgumentException("[ERROR] 올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요.");
         }
     }
 
