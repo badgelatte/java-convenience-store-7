@@ -29,6 +29,11 @@ public class Store {
     }
 
     public void purchaseItem(List<Product> product, int itemQuantity) {
+        int allItemCount = product.get(0).getQuantity() + product.get(1).getQuantity();
+        if (allItemCount <= itemQuantity) {
+            throw new IllegalArgumentException("[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.");
+        }
+
         int quantity = product.getFirst().buy(itemQuantity);
         if (quantity > 0) {
             product.get(1).buy(quantity);
