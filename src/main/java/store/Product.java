@@ -6,11 +6,11 @@ public class Product {
     private String name;
     private int price;
     private int quantity;
-    private String promotion;
+    private Promotion promotion;
 
     private final DecimalFormat PRICE_FORMATTER = new DecimalFormat("###,###");
 
-    public Product(String name, int price, int quantity, String promotion) {
+    public Product(String name, int price, int quantity, Promotion promotion) {
         this.name = name;
         this.price = price;
         this.quantity = quantity;
@@ -29,7 +29,7 @@ public class Product {
         return quantity;
     }
 
-    public String getPromotion() {
+    public Promotion getPromotion() {
         return promotion;
     }
 

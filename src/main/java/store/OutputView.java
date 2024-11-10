@@ -13,10 +13,10 @@ public class OutputView {
 
     public void start(Store store) {
         printWelcomeMsg();
-        List<String> productInfos = fileRead(PRODUCTS_FILE_PATH);
-        inputProductToStore(productInfos, store);
         List<String> promotionInfos = fileRead(PROMOTIONS_FILE_PATH);
         inputPromotion(promotionInfos, store);
+        List<String> productInfos = fileRead(PRODUCTS_FILE_PATH);
+        inputProductToStore(productInfos, store);
     }
 
     public void printWelcomeMsg() {
@@ -34,7 +34,7 @@ public class OutputView {
 
     public void inputProductToStore(List<String> productList, Store store) {
         for (String productInfo : productList) {
-            Product product = makeProduct(productInfo);
+            Product product = makeProduct(productInfo, store);
 
             printProduct(product);
             store.addProduct(product);
@@ -49,13 +49,14 @@ public class OutputView {
         }
     }
 
-    public Product makeProduct(String input) {
+    public Product makeProduct(String input, Store store) {
         String[] inputs = input.split(",");
 
         int price = validatePrice(inputs[1]);
         int quantity = Integer.parseInt(inputs[2]);
 
-        return new Product(inputs[0], price, quantity, inputs[3]);
+        Promotion promotion = store.findPromotion(inputs[3]);
+        return new Product(inputs[0], price, quantity, promotion);
     }
 
     public Promotion makePromotion(String input) {
