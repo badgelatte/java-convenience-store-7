@@ -4,7 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ShoppingCart {
-    Map<String, Integer> items = new HashMap<>();
+    private Map<String, Integer> items = new HashMap<>();
+
+    public Map<String, Integer> getItems() {
+        return items;
+    }
 
     public void addItems(String input) {
         String[] itemList = input.split(",");
