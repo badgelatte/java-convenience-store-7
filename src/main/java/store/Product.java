@@ -31,6 +31,10 @@ public class Product {
         return promotion;
     }
 
+    public void buy(int quantity) {
+        this.quantity -= quantity;
+    }
+
     @Override
     public String toString() {
         DecimalFormat formatter = new DecimalFormat("###,###");
