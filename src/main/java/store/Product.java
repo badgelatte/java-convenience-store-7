@@ -8,6 +8,8 @@ public class Product {
     private int quantity;
     private String promotion;
 
+    private final DecimalFormat PRICE_FORMATTER = new DecimalFormat("###,###");
+
     public Product(String name, int price, int quantity, String promotion) {
         this.name = name;
         this.price = price;
@@ -35,10 +37,13 @@ public class Product {
         this.quantity -= quantity;
     }
 
+    public String printPrice() {
+        return PRICE_FORMATTER.format(price);
+    }
+
     @Override
     public String toString() {
-        DecimalFormat formatter = new DecimalFormat("###,###");
 
-        return "- " + name + " " + formatter.format(price) + "원 " + quantity + " " + promotion;
+        return "- " + name + " " + PRICE_FORMATTER.format(price) + "원 " + quantity + " " + promotion;
     }
 }
