@@ -16,7 +16,9 @@ public class Store {
         Map<String, Integer> itemList = cart.getItems();
         for (Entry<String, Integer> item : itemList.entrySet()) {
             List<Product> product = findProduct(item.getKey());
-
+            if (product == null) {
+                throw new IllegalArgumentException("[ERROR] 존재하지 않는 상품입니다. 다시 입력해주세요");
+            }
             purchaseItem(product, item.getValue());
         }
     }
