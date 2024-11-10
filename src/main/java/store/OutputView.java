@@ -7,11 +7,13 @@ import java.util.List;
 
 public class OutputView {
     private static final String PRODUCTS_FILE_PATH = "src/main/resources/products.md";
+    private static final String PROMOTIONS_FILE_PATH = "src/main/resources/promotions.md";
 
     public void start(Store store) {
         printWelcomeMsg();
         List<String> productInfos = fileRead(PRODUCTS_FILE_PATH);
         inputProductToStore(productInfos, store);
+        List<String> promotionInfos = fileRead(PROMOTIONS_FILE_PATH);
     }
 
     public void printWelcomeMsg() {
