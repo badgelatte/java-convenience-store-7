@@ -29,11 +29,9 @@ public class Promotion {
         return get;
     }
 
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
+    public boolean isPromotionPeriod() {
+        boolean isAfter = startDate.isAfter(LocalDate.now());
+        boolean isBefore = endDate.isBefore(LocalDate.now());
+        return isAfter && isBefore;
     }
 }
