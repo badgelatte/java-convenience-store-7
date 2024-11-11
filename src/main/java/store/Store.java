@@ -86,7 +86,10 @@ public class Store {
     }
 
     public void purchaseItem(List<Product> products, int itemQuantity) {
-        int allItemCount = products.get(0).getQuantity() + products.get(1).getQuantity();
+        int allItemCount = products.get(0).getQuantity();
+        if (products.size() > 1) {
+            allItemCount += products.get(1).getQuantity();
+        }
         if (allItemCount <= itemQuantity) {
             throw new IllegalArgumentException("[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.");
         }
@@ -216,7 +219,7 @@ public class Store {
         System.out.println("총구매액\t\t" + calculateTotalQuantity() + "\t" + priceFormatter.format(totalPurchase));
         System.out.println("행사할인\t\t\t-" + priceFormatter.format(eventDiscountAmount));
         System.out.println("멤버십할인\t\t\t-" + priceFormatter.format(membershipDiscountAmount));
-        System.out.println("내실돈\t\t\t " + priceFormatter.format(totalPay));
+        System.out.println("내실돈\t\t\t" + priceFormatter.format(totalPay));
     }
 
     public void printRceipt() {
