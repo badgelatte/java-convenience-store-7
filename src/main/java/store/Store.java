@@ -21,6 +21,12 @@ public class Store {
         promotionList.add(promotion);
     }
 
+    public void printProduct() {
+        for (Product product : productList) {
+            System.out.println("-" + product.toString());
+        }
+    }
+
     public void buyAllItemsInCart(ShoppingCart cart) {
         Map<String, Integer> itemList = cart.getItems();
         for (Entry<String, Integer> item : itemList.entrySet()) {

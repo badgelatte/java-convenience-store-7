@@ -37,7 +37,6 @@ public class OutputView {
         for (String productInfo : productList) {
             Product product = makeProduct(productInfo, store);
 
-            printProduct(product);
             store.addProduct(product);
         }
     }
@@ -77,9 +76,5 @@ public class OutputView {
             price = Integer.parseInt(input);
         }
         return price;
-    }
-
-    public void printProduct(Product product) {
-        System.out.println("- " + product.toString());
     }
 }
