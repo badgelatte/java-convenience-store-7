@@ -10,6 +10,9 @@ public class Application {
         outputView.start(store);
         try {
             start();
+            while (InputView.oneMorePurchase().equals("Y")) {
+                start();
+            }
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
             start();
