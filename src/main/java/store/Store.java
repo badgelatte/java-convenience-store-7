@@ -29,6 +29,7 @@ public class Store {
                 throw new IllegalArgumentException("[ERROR] 존재하지 않는 상품입니다. 다시 입력해주세요");
             }
             purchaseItem(product, item.getValue());
+            printRceipt();
         }
     }
 
@@ -119,4 +120,75 @@ public class Store {
         }
         return null;
     }
+
+    private int calculateTotalPurchase() {
+        int totalPurchase = 0;
+        for (Entry<Product, Integer> item : promotionItem.entrySet()) {
+            totalPurchase += item.getValue() * item.getKey().getPrice();
+        }
+        for (Entry<Product, Integer> item : noPromotionItem.entrySet()) {
+            totalPurchase += item.getValue() * item.getKey().getPrice();
+        }
+        return totalPurchase;
+    }
+
+    private int calculateTotalQuantity() {
+        int totalQuantity = 0;
+        for (Entry<Product, Integer> item : promotionItem.entrySet()) {
+            totalQuantity += item.getValue();
+        }
+        for (Entry<Product, Integer> item : noPromotionItem.entrySet()) {
+            totalQuantity += item.getValue();
+        }
+        return totalQuantity;
+    }
+
+    private int calculateTotalPromotionPrice() {
+        int totalPrice = 0;
+        for (Entry<Product, Integer> item : promotionItem.entrySet()) {
+            totalPrice += item.getValue() * item.getKey().getPrice();
+        }
+        return totalPrice;
+    }
+
+    private void procedurePurchaseItem() {
+        System.out.println("==============W 편의점================");
+        System.out.println("상품명\t\t수량\t금액");
+        for (Entry<Product, Integer> item : promotionItem.entrySet()) {
+            Promotion promotion = item.getKey().getPromotion();
+            int promotionQuantity = item.getValue() % (promotion.getBuy() + promotion.getGet()) * promotion.getBuy();
+            System.out.println(item.getKey() + "\t\t" + promotionQuantity + "\t" + item.getKey().printPrice(item.getValue()));
+        }
+    }
+
+    private void procedurePromotion() {
+        System.out.println("=============증\t정===============");
+        for (Entry<Product, Integer> item : promotionItem.entrySet()) {
+            Promotion promotion = item.getKey().getPromotion();
+            int promotionQuantity = item.getValue() % (promotion.getBuy() + promotion.getGet()) * promotion.getGet();
+            System.out.println(item.getKey() + "\t\t" + promotionQuantity);
+        }
+    }
+
+    private void procedureTotal(DecimalFormat priceFormatter) {
+        int totalPurchase = calculateTotalPurchase();
+        int eventDiscountAmount = calculateTotalPromotionPrice();
+        int membershipDiscountAmount = applyDiscount(totalPurchase - eventDiscountAmount);
+        int totalPay = totalPurchase - eventDiscountAmount - membershipDiscountAmount;
+
+        System.out.println("====================================");
+        System.out.println("총구매액\t\t" + calculateTotalQuantity() +"\t" + priceFormatter.format(totalPurchase));
+        System.out.println("행사할인\t\t\t-" + eventDiscountAmount);
+        System.out.println("멤버십할인\\t\\t\\t-" + priceFormatter.format(membershipDiscountAmount));
+        System.out.println("내실돈\t\t\t " + priceFormatter.format(totalPay));
+    }
+
+    public void printRceipt() {
+        DecimalFormat priceFormatter = new DecimalFormat("###,###");
+
+        procedurePurchaseItem();
+        procedurePromotion();
+        procedureTotal(priceFormatter);
+    }
 }
+
