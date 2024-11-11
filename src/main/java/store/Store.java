@@ -28,6 +28,7 @@ public class Store {
                 throw new IllegalArgumentException("[ERROR] 존재하지 않는 상품입니다. 다시 입력해주세요");
             }
             purchaseItem(product, item.getValue());
+            applyDiscount();
         }
     }
 
@@ -80,6 +81,25 @@ public class Store {
         if(products.getFirst().getPromotion().isPromotionPeriod()) {
             checkPromotion(products, itemQuantity);
         }
+    }
+
+    public double applyDiscount() {
+        double allPrice = 0;
+        String answer = InputView.membershipDiscountMsg();
+        if (answer.equals("Y")) {
+            allPrice = calculateDiscount(allPrice);
+        }
+        if (allPrice > 8000) {
+            return 8000;
+        }
+        return allPrice;
+    }
+
+    private double calculateDiscount(double allPrice) {
+        for (Entry<Product, Integer> item : noPromotionItem.entrySet()) {
+            allPrice += item.getValue() * item.getKey().getPrice() * 0.3;
+        }
+        return allPrice;
     }
 
     public List<Product> findProduct(String itemName) {
