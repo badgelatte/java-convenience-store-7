@@ -1,5 +1,6 @@
 package store;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +29,6 @@ public class Store {
                 throw new IllegalArgumentException("[ERROR] 존재하지 않는 상품입니다. 다시 입력해주세요");
             }
             purchaseItem(product, item.getValue());
-            applyDiscount();
         }
     }
 
@@ -83,23 +83,20 @@ public class Store {
         }
     }
 
-    public double applyDiscount() {
-        double allPrice = 0;
+    public int applyDiscount(int amount) {
+        int allPrice = 0;
         String answer = InputView.membershipDiscountMsg();
         if (answer.equals("Y")) {
-            allPrice = calculateDiscount(allPrice);
-        }
-        if (allPrice > 8000) {
-            return 8000;
+            allPrice = calculateDiscount(amount);
+            if (allPrice > 8000) {
+                return 8000;
+            }
         }
         return allPrice;
     }
 
-    private double calculateDiscount(double allPrice) {
-        for (Entry<Product, Integer> item : noPromotionItem.entrySet()) {
-            allPrice += item.getValue() * item.getKey().getPrice() * 0.3;
-        }
-        return allPrice;
+    private int calculateDiscount(int amount) {
+        return (int)(amount * 0.3);
     }
 
     public List<Product> findProduct(String itemName) {
