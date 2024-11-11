@@ -30,8 +30,8 @@ public class Promotion {
     }
 
     public boolean isPromotionPeriod() {
-        boolean isAfter = startDate.isAfter(LocalDate.now());
-        boolean isBefore = endDate.isBefore(LocalDate.now());
+        boolean isBefore = startDate.isBefore(LocalDate.now());
+        boolean isAfter = endDate.isAfter(LocalDate.now());
         return isAfter && isBefore;
     }
 }
