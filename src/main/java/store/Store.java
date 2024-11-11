@@ -29,8 +29,8 @@ public class Store {
                 throw new IllegalArgumentException("[ERROR] 존재하지 않는 상품입니다. 다시 입력해주세요");
             }
             purchaseItem(product, item.getValue());
-            printRceipt();
         }
+        printRceipt();
     }
 
     private String isMemberShipDiscount() {
