@@ -13,6 +13,7 @@ public class ShoppingCart {
     public void addItems(String input) {
         String[] itemList = input.split(",");
         for (String item : itemList) {
+            item = item.strip();
             check(item);
             String itemName = outputItemName(item);
             int quantity = outputItemQuantity(item);
