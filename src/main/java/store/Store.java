@@ -33,7 +33,16 @@ public class Store {
         }
     }
 
+    private String isMemberShipDiscount() {
+        return InputView.membershipDiscountMsg();
+    }
+
     private int isReceivedPromotion(Product product, int quantity) {
+        Promotion promotion = product.getPromotion();
+        boolean isBuyQuantity = (quantity % (promotion.getBuy() + promotion.getGet())) == promotion.getBuy();
+        if (!isBuyQuantity) {
+            return quantity;
+        }
         String answer = InputView.giveAwayPromotionMsg(product.getName(), product.getPromotion());
         if (answer.equals("Y")) {
             return ++quantity;
@@ -46,6 +55,7 @@ public class Store {
         int promotionGet = product.getPromotion().getGet();
         return product.getQuantity() % (promotionBuy + promotionGet);
     }
+
     private boolean isPromotionOutOfSock(Product product, int quantity) {
         String answer = InputView.promotionOutOfStockMsg(product.getName(), quantity);
         return answer.equals("Y");
@@ -58,19 +68,20 @@ public class Store {
         int noPromotionProductQuantity = calculatePromotionQuantity(productWithPromotion) + remainQuantity;
         if (isPromotionOutOfSock(productWithNoPromotion, noPromotionProductQuantity)) {
             productWithPromotion.buy(productWithPromotion.getQuantity());
-            promotionItem.put(productWithPromotion, productWithPromotion.getQuantity());
+            promotionItem.put(productWithPromotion, itemQuantity - remainQuantity);
             productWithNoPromotion.buy(remainQuantity);
-            noPromotionItem.put(productWithNoPromotion, noPromotionProductQuantity);
+            noPromotionItem.put(productWithNoPromotion, remainQuantity);
         }
     }
 
-    public void checkPromotion (List<Product> products, int itemQuantity) {
+    public void checkPromotion(List<Product> products, int itemQuantity) {
         Product productWithPromotion = products.getFirst();
-        if (productWithPromotion.getQuantity() <= itemQuantity) {
+        if (productWithPromotion.getQuantity() < itemQuantity) {
             promotionOutOfStockProcedure(products, itemQuantity);
             return;
         }
         itemQuantity = isReceivedPromotion(productWithPromotion, itemQuantity);
+        promotionItem.put(productWithPromotion, itemQuantity);
         productWithPromotion.buy(itemQuantity);
     }
 
@@ -79,14 +90,13 @@ public class Store {
         if (allItemCount <= itemQuantity) {
             throw new IllegalArgumentException("[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.");
         }
-        if(products.getFirst().getPromotion().isPromotionPeriod()) {
+        if (products.getFirst().getPromotion().isPromotionPeriod()) {
             checkPromotion(products, itemQuantity);
         }
     }
 
-    public int applyDiscount(int amount) {
+    public int applyDiscount(String answer, int amount) {
         int allPrice = 0;
-        String answer = InputView.membershipDiscountMsg();
         if (answer.equals("Y")) {
             allPrice = calculateDiscount(amount);
             if (allPrice > 8000) {
@@ -97,7 +107,7 @@ public class Store {
     }
 
     private int calculateDiscount(int amount) {
-        return (int)(amount * 0.3);
+        return (int) (amount * 0.3);
     }
 
     public List<Product> findProduct(String itemName) {
@@ -112,6 +122,9 @@ public class Store {
     }
 
     public Promotion findPromotion(String productName) {
+        if (productName.equals("null")) {
+            return null;
+        }
         for (Promotion promotion : promotionList) {
             String productPromotionName = promotion.getName();
             if (productName.equals(productPromotionName)) {
@@ -146,7 +159,9 @@ public class Store {
     private int calculateTotalPromotionPrice() {
         int totalPrice = 0;
         for (Entry<Product, Integer> item : promotionItem.entrySet()) {
-            totalPrice += item.getValue() * item.getKey().getPrice();
+            Promotion promotion = item.getKey().getPromotion();
+            int promotionQuantity = item.getValue() / (promotion.getBuy() + promotion.getGet()) * promotion.getGet();
+            totalPrice += promotionQuantity * item.getKey().getPrice();
         }
         return totalPrice;
     }
@@ -154,41 +169,63 @@ public class Store {
     private void procedurePurchaseItem() {
         System.out.println("==============W 편의점================");
         System.out.println("상품명\t\t수량\t금액");
-        for (Entry<Product, Integer> item : promotionItem.entrySet()) {
-            Promotion promotion = item.getKey().getPromotion();
-            int promotionQuantity = item.getValue() % (promotion.getBuy() + promotion.getGet()) * promotion.getBuy();
-            System.out.println(item.getKey() + "\t\t" + promotionQuantity + "\t" + item.getKey().printPrice(item.getValue()));
+        Map<String, Integer> purchaseAll = purchaseHistory();
+        for (Entry<String, Integer> item : purchaseAll.entrySet()) {
+            Product product = findProduct(item.getKey()).getFirst();
+            System.out.println(item.getKey() + "\t\t" + item.getValue() + "\t" + product.getPrice() * item.getValue());
         }
+    }
+
+    private int calculateTotalCounts(Map<String, Integer> purchaseProducts, Entry<Product, Integer> item) {
+        String productName = item.getKey().getName();
+        int a = item.getValue();
+        if (purchaseProducts.containsKey(productName)) {
+            a = purchaseProducts.get(productName) + item.getValue();
+        }
+        return a;
+    }
+
+    private Map<String, Integer> purchaseHistory() {
+        Map<String, Integer> purchaseProducts = new HashMap<>();
+        for (Entry<Product, Integer> item : promotionItem.entrySet()) {
+            purchaseProducts.put(item.getKey().getName(), item.getValue());
+        }
+        for (Entry<Product, Integer> item : noPromotionItem.entrySet()) {
+            int a = calculateTotalCounts(purchaseProducts, item);
+            purchaseProducts.put(item.getKey().getName(), a);
+        }
+        return purchaseProducts;
     }
 
     private void procedurePromotion() {
         System.out.println("=============증\t정===============");
         for (Entry<Product, Integer> item : promotionItem.entrySet()) {
             Promotion promotion = item.getKey().getPromotion();
-            int promotionQuantity = item.getValue() % (promotion.getBuy() + promotion.getGet()) * promotion.getGet();
-            System.out.println(item.getKey() + "\t\t" + promotionQuantity);
+            int promotionQuantity = item.getValue() / (promotion.getBuy() + promotion.getGet()) * promotion.getGet();
+            System.out.println(item.getKey().getName() + "\t\t" + promotionQuantity);
         }
     }
 
-    private void procedureTotal(DecimalFormat priceFormatter) {
+    private void procedureTotal(String answer, DecimalFormat priceFormatter) {
         int totalPurchase = calculateTotalPurchase();
         int eventDiscountAmount = calculateTotalPromotionPrice();
-        int membershipDiscountAmount = applyDiscount(totalPurchase - eventDiscountAmount);
+        int membershipDiscountAmount = applyDiscount(answer, totalPurchase - eventDiscountAmount);
         int totalPay = totalPurchase - eventDiscountAmount - membershipDiscountAmount;
 
         System.out.println("====================================");
-        System.out.println("총구매액\t\t" + calculateTotalQuantity() +"\t" + priceFormatter.format(totalPurchase));
-        System.out.println("행사할인\t\t\t-" + eventDiscountAmount);
-        System.out.println("멤버십할인\\t\\t\\t-" + priceFormatter.format(membershipDiscountAmount));
+        System.out.println("총구매액\t\t" + calculateTotalQuantity() + "\t" + priceFormatter.format(totalPurchase));
+        System.out.println("행사할인\t\t\t-" + priceFormatter.format(eventDiscountAmount));
+        System.out.println("멤버십할인\t\t\t-" + priceFormatter.format(membershipDiscountAmount));
         System.out.println("내실돈\t\t\t " + priceFormatter.format(totalPay));
     }
 
     public void printRceipt() {
         DecimalFormat priceFormatter = new DecimalFormat("###,###");
+        String answer = isMemberShipDiscount();
 
         procedurePurchaseItem();
         procedurePromotion();
-        procedureTotal(priceFormatter);
+        procedureTotal(answer, priceFormatter);
     }
 }
 
