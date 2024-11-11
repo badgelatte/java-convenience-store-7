@@ -1,6 +1,7 @@
 package store;
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 
 public class Product {
     private String name;
@@ -37,7 +38,11 @@ public class Product {
         if (quantity > this.quantity) {
             int remainingQuantity = quantity - this.quantity;
             this.quantity = 0;
-            return remainingQuantity;
+            String answer = OutputView.promotionOutOfStockMsg(name, remainingQuantity);
+            if (answer.equals("Y")) {
+                return remainingQuantity;
+            }
+            return 0;
         }
         this.quantity -= quantity;
         return 0;
