@@ -1,13 +1,16 @@
 package store;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 public class Store {
-    List<Product> productList = new ArrayList<>();
-    List<Promotion> promotionList = new ArrayList<>();
+    private List<Product> productList = new ArrayList<>();
+    private List<Promotion> promotionList = new ArrayList<>();
+    private Map<Product, Integer> promotionItem = new HashMap<>();
+    private Map<Product, Integer> noPromotionItem = new HashMap<>();
 
     public void addProduct(Product product) {
         productList.add(product);
@@ -28,15 +31,54 @@ public class Store {
         }
     }
 
-    public void purchaseItem(List<Product> product, int itemQuantity) {
-        int allItemCount = product.get(0).getQuantity() + product.get(1).getQuantity();
+    private int isReceivedPromotion(Product product, int quantity) {
+        String answer = InputView.giveAwayPromotionMsg(product.getName(), product.getPromotion());
+        if (answer.equals("Y")) {
+            return ++quantity;
+        }
+        return quantity;
+    }
+
+    private int calculatePromotionQuantity(Product product) {
+        int promotionBuy = product.getPromotion().getBuy();
+        int promotionGet = product.getPromotion().getGet();
+        return product.getQuantity() % (promotionBuy + promotionGet);
+    }
+    private boolean isPromotionOutOfSock(Product product, int quantity) {
+        String answer = InputView.promotionOutOfStockMsg(product.getName(), quantity);
+        return answer.equals("Y");
+    }
+
+    public void promotionOutOfStockProcedure(List<Product> products, int itemQuantity) {
+        Product productWithPromotion = products.getFirst();
+        Product productWithNoPromotion = products.getLast();
+        int remainQuantity = itemQuantity - productWithPromotion.getQuantity();
+        int noPromotionProductQuantity = calculatePromotionQuantity(productWithPromotion) + remainQuantity;
+        if (isPromotionOutOfSock(productWithNoPromotion, noPromotionProductQuantity)) {
+            productWithPromotion.buy(productWithPromotion.getQuantity());
+            promotionItem.put(productWithPromotion, productWithPromotion.getQuantity());
+            productWithNoPromotion.buy(remainQuantity);
+            noPromotionItem.put(productWithNoPromotion, noPromotionProductQuantity);
+        }
+    }
+
+    public void checkPromotion (List<Product> products, int itemQuantity) {
+        Product productWithPromotion = products.getFirst();
+        if (productWithPromotion.getQuantity() <= itemQuantity) {
+            promotionOutOfStockProcedure(products, itemQuantity);
+            return;
+        }
+        itemQuantity = isReceivedPromotion(productWithPromotion, itemQuantity);
+        productWithPromotion.buy(itemQuantity);
+    }
+
+    public void purchaseItem(List<Product> products, int itemQuantity) {
+        int allItemCount = products.get(0).getQuantity() + products.get(1).getQuantity();
         if (allItemCount <= itemQuantity) {
             throw new IllegalArgumentException("[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.");
         }
-
-        int quantity = product.getFirst().buy(itemQuantity);
-        if (quantity > 0) {
-            product.get(1).buy(quantity);
+        if(products.getFirst().getPromotion().isPromotionPeriod()) {
+            checkPromotion(products, itemQuantity);
         }
     }
 

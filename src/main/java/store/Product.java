@@ -34,49 +34,15 @@ public class Product {
         return promotion;
     }
 
-    public int buy(int quantity) {
-        quantity = checkPromotion(quantity);
-        if (quantity > this.quantity) {
-            int remainingQuantity = quantity - this.quantity;
-            this.quantity = 0;
-            String answer = OutputView.promotionOutOfStockMsg(name, remainingQuantity);
-            if (answer.equals("Y")) {
-                return remainingQuantity;
-            }
-            return 0;
-        }
+    public void buy(int quantity) {
         this.quantity -= quantity;
-        return 0;
     }
 
-    public boolean isPromotionPeriod() {
-        boolean isAfter = promotion.getStartDate().isAfter(LocalDate.now());
-        boolean isBefore = promotion.getEndDate().isBefore(LocalDate.now());
-        return isAfter && isBefore;
-    }
 
-    public int checkPromotion(int quantity) {
-        if (promotion == null || !isPromotionPeriod()) {
-            return quantity;
-        }
 
-        int remainQuantity = quantity % (promotion.getBuy() + promotion.getGet());
-        if (remainQuantity == promotion.getBuy()) {
-            quantity = isReceivedPromotion(quantity);
-        }
-        return quantity;
-    }
 
-    public int isReceivedPromotion(int quantity) {
-        String answer = OutputView.giveAwayPromotionMsg(name, promotion);
-        if (answer.equals("Y")) {
-            return ++quantity;
-        }
-        return quantity;
-    }
-
-    public String printPrice() {
-        return PRICE_FORMATTER.format(price);
+    public String printPrice(int quantity) {
+        return PRICE_FORMATTER.format(price * quantity);
     }
 
     @Override
