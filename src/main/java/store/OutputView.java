@@ -80,6 +80,6 @@ public class OutputView {
     }
 
     public void printProduct(Product product) {
-        System.out.println(product.toString());
+        System.out.println("- " + product.toString());
     }
 }

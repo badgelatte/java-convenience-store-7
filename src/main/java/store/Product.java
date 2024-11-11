@@ -38,16 +38,11 @@ public class Product {
         this.quantity -= quantity;
     }
 
-
-
-
-    public String printPrice(int quantity) {
-        return PRICE_FORMATTER.format(price * quantity);
-    }
-
     @Override
     public String toString() {
-
-        return "- " + name + " " + PRICE_FORMATTER.format(price) + "원 " + quantity + " " + promotion;
+        if(promotion == null) {
+            return name + " " + PRICE_FORMATTER.format(price) + "원 " + quantity + " " + "null";
+        }
+        return name + " " + PRICE_FORMATTER.format(price) + "원 " + quantity + " " + promotion.getName();
     }
 }
