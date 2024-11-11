@@ -175,7 +175,8 @@ public class Store {
         Map<String, Integer> purchaseAll = purchaseHistory();
         for (Entry<String, Integer> item : purchaseAll.entrySet()) {
             Product product = findProduct(item.getKey()).getFirst();
-            System.out.println(item.getKey() + "\t\t" + item.getValue() + "\t" + product.getPrice() * item.getValue());
+            String productName = String.format("%-5s", item.getKey());
+            System.out.println(productName + " \t\t" + item.getValue() + " \t" + product.getPrice() * item.getValue());
         }
     }
 
@@ -205,7 +206,8 @@ public class Store {
         for (Entry<Product, Integer> item : promotionItem.entrySet()) {
             Promotion promotion = item.getKey().getPromotion();
             int promotionQuantity = item.getValue() / (promotion.getBuy() + promotion.getGet()) * promotion.getGet();
-            System.out.println(item.getKey().getName() + "\t\t" + promotionQuantity);
+            String productName = String.format("%-5s", item.getKey().getName());
+            System.out.println(productName + "\t\t" + promotionQuantity);
         }
     }
 
